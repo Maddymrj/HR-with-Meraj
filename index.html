@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HR Learning Hub</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --primary:#1a56db;--primary-dark:#1e429f;--accent:#f59e0b;
+    --bg:#f0f4ff;--card:#fff;--text:#1e293b;--muted:#64748b;
+    --border:#e2e8f0;--success:#10b981;--tag-basic:#dcfce7;--tag-inter:#fef9c3;--tag-adv:#fee2e2;
+  }
+  body{font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--text);}
+  /* NAV */
+  nav{background:var(--primary);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+  .logo{color:#fff;font-size:1.3rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.5rem;}
+  .logo span{color:var(--accent);}
+  .nav-links{display:flex;gap:1.5rem;}
+  .nav-links a{color:#cbd5e1;text-decoration:none;font-size:.9rem;cursor:pointer;transition:.2s;}
+  .nav-links a:hover,.nav-links a.active{color:#fff;}
+  /* PAGES */
+  .page{display:none;animation:fadeIn .3s ease;}
+  .page.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  /* HOME */
+  .hero{background:linear-gradient(135deg,#1a56db,#1e429f);color:#fff;padding:4rem 2rem;text-align:center;}
+  .hero h1{font-size:2.4rem;margin-bottom:1rem;line-height:1.2;}
+  .hero h1 span{color:var(--accent);}
+  .hero p{font-size:1.05rem;color:#bfdbfe;margin-bottom:2rem;max-width:600px;margin-left:auto;margin-right:auto;}
+  .search-bar{display:flex;max-width:560px;margin:0 auto;gap:.5rem;}
+  .search-bar input{flex:1;padding:.8rem 1.2rem;border-radius:8px;border:none;font-size:1rem;outline:none;}
+  .search-bar button{background:var(--accent);color:#1e293b;border:none;padding:.8rem 1.4rem;border-radius:8px;font-weight:700;cursor:pointer;}
+  .stats{display:flex;justify-content:center;gap:3rem;padding:2rem;background:#fff;border-bottom:1px solid var(--border);}
+  .stat{text-align:center;}
+  .stat-num{font-size:1.8rem;font-weight:800;color:var(--primary);}
+  .stat-label{font-size:.85rem;color:var(--muted);}
+  .section{padding:2rem;}
+  .section-title{font-size:1.3rem;font-weight:700;margin-bottom:1.2rem;color:var(--text);}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;}
+  .card{background:var(--card);border-radius:12px;padding:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;border:1px solid var(--border);transition:.2s;}
+  .card:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.12);border-color:var(--primary);}
+  .card-icon{font-size:2rem;margin-bottom:.5rem;}
+  .card h3{font-size:1rem;margin-bottom:.4rem;}
+  .card p{font-size:.85rem;color:var(--muted);}
+  .tag{display:inline-block;padding:.2rem .7rem;border-radius:20px;font-size:.75rem;font-weight:600;margin-top:.6rem;}
+  .tag.basic{background:var(--tag-basic);color:#166534;}
+  .tag.intermediate{background:var(--tag-inter);color:#854d0e;}
+  .tag.advanced{background:var(--tag-adv);color:#991b1b;}
+  /* TOPICS */
+  .filter-bar{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+  .filter-btn{padding:.4rem 1rem;border-radius:20px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:.85rem;transition:.2s;}
+  .filter-btn.active,.filter-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary);}
+  /* TOPIC DETAIL */
+  .detail-back{display:flex;align-items:center;gap:.5rem;color:var(--primary);cursor:pointer;font-weight:600;margin-bottom:1rem;}
+  .detail-back:hover{text-decoration:underline;}
+  .detail-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1rem;border:1px solid var(--border);}
+  .detail-header h2{font-size:1.5rem;margin-bottom:.4rem;}
+  .detail-body{background:#fff;padding:1.5rem;border-radius:12px;border:1px solid var(--border);margin-bottom:1rem;}
+  .detail-body h3{font-size:1.1rem;margin:1rem 0 .5rem;color:var(--primary);}
+  .detail-body p{line-height:1.7;color:#374151;font-size:.95rem;}
+  .detail-body ul{margin-left:1.5rem;line-height:1.9;color:#374151;font-size:.95rem;}
+  /* FILES */
+  .file-section{background:#fff;padding:1.5rem;border-radius:12px;border:1px solid var(--border);margin-bottom:1rem;}
+  .file-section h3{font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--text);}
+  .file-list{display:flex;flex-direction:column;gap:.6rem;}
+  .file-item{display:flex;align-items:center;gap:.8rem;padding:.7rem 1rem;background:var(--bg);border-radius:8px;border:1px solid var(--border);}
+  .file-icon{font-size:1.4rem;}
+  .file-info{flex:1;}
+  .file-name{font-size:.9rem;font-weight:600;}
+  .file-meta{font-size:.75rem;color:var(--muted);}
+  .file-btn{padding:.3rem .8rem;border-radius:6px;border:1px solid var(--primary);color:var(--primary);background:#fff;cursor:pointer;font-size:.8rem;font-weight:600;}
+  .file-btn:hover{background:var(--primary);color:#fff;}
+  .upload-area{border:2px dashed var(--border);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:.2s;margin-top:1rem;}
+  .upload-area:hover{border-color:var(--primary);background:#eff6ff;}
+  .upload-area p{color:var(--muted);font-size:.9rem;}
+  .upload-area .upload-icon{font-size:2rem;margin-bottom:.4rem;}
+  input[type=file]{display:none;}
+  /* QNA */
+  .qa-form{background:#fff;padding:1.5rem;border-radius:12px;border:1px solid var(--border);margin-bottom:1.5rem;}
+  .qa-form h3{margin-bottom:1rem;font-size:1.1rem;}
+  .qa-form input,.qa-form textarea,.qa-form select{width:100%;padding:.7rem 1rem;border:1px solid var(--border);border-radius:8px;font-size:.9rem;margin-bottom:.8rem;outline:none;font-family:inherit;}
+  .qa-form textarea{height:100px;resize:vertical;}
+  .btn-primary{background:var(--primary);color:#fff;border:none;padding:.7rem 1.5rem;border-radius:8px;cursor:pointer;font-weight:600;font-size:.9rem;}
+  .btn-primary:hover{background:var(--primary-dark);}
+  .qa-card{background:#fff;border-radius:12px;padding:1.2rem;border:1px solid var(--border);margin-bottom:1rem;}
+  .qa-card .q-title{font-weight:700;font-size:1rem;margin-bottom:.4rem;}
+  .qa-card .q-meta{font-size:.8rem;color:var(--muted);margin-bottom:.6rem;}
+  .qa-card .q-body{font-size:.9rem;color:#374151;line-height:1.6;}
+  .qa-card .q-tag{display:inline-block;background:#eff6ff;color:var(--primary);padding:.2rem .6rem;border-radius:4px;font-size:.75rem;font-weight:600;margin-right:.4rem;}
+  .answers{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);}
+  .answer{background:#f8fafc;padding:.8rem;border-radius:8px;margin-bottom:.6rem;font-size:.88rem;line-height:1.6;}
+  .answer-meta{font-size:.75rem;color:var(--muted);margin-top:.3rem;}
+  .reply-form{display:none;margin-top:.8rem;}
+  .reply-form textarea{width:100%;padding:.6rem;border:1px solid var(--border);border-radius:6px;font-size:.85rem;height:70px;resize:none;font-family:inherit;}
+  .btn-sm{padding:.4rem .9rem;border-radius:6px;border:none;cursor:pointer;font-size:.82rem;font-weight:600;}
+  .btn-outline{background:#fff;border:1px solid var(--primary);color:var(--primary);}
+  .btn-outline:hover{background:var(--primary);color:#fff;}
+  /* ADMIN PANEL */
+  .admin-section{background:#fff;border-radius:12px;padding:1.5rem;border:1px solid var(--border);margin-bottom:1.5rem;}
+  .admin-section h3{font-weight:700;margin-bottom:1rem;font-size:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  .form-group{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.8rem;}
+  .form-group label{font-size:.85rem;font-weight:600;color:var(--muted);}
+  .form-group input,.form-group select,.form-group textarea{padding:.6rem 1rem;border:1px solid var(--border);border-radius:8px;font-size:.9rem;outline:none;font-family:inherit;}
+  .form-group textarea{height:120px;resize:vertical;}
+  .color-picker-group{display:flex;gap:.8rem;flex-wrap:wrap;}
+  .color-opt{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s;}
+  .color-opt.selected,.color-opt:hover{border-color:#1e293b;transform:scale(1.1);}
+  .toggle-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border);}
+  .toggle-row:last-child{border-bottom:none;}
+  .toggle{position:relative;width:44px;height:24px;}
+  .toggle input{opacity:0;width:0;height:0;}
+  .slider{position:absolute;cursor:pointer;inset:0;background:#cbd5e1;border-radius:24px;transition:.3s;}
+  .slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;}
+  .toggle input:checked+.slider{background:var(--primary);}
+  .toggle input:checked+.slider:before{transform:translateX(20px);}
+  .success-msg{background:#dcfce7;color:#166534;padding:.6rem 1rem;border-radius:8px;font-size:.88rem;margin-top:.5rem;display:none;}
+  footer{background:#1e293b;color:#94a3b8;text-align:center;padding:1.5rem;font-size:.85rem;}
+  footer span{color:var(--accent);font-weight:600;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="showPage('home')">📚 <span>HR</span>Learning Hub</div>
+  <div class="nav-links">
+    <a onclick="showPage('home')" id="nav-home" class="active">Home</a>
+    <a onclick="showPage('topics')" id="nav-topics">Topics</a>
+    <a onclick="showPage('qna')" id="nav-qna">Q&A</a>
+    <a onclick="showPage('admin')" id="nav-admin">⚙️ Edit Site</a>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <h1>Master <span>Human Resources</span><br/>From Basic to Advanced</h1>
+    <p>Your free, all-in-one platform for HR study materials, notes, PDFs, and community Q&A.</p>
+    <div class="search-bar">
+      <input type="text" id="home-search" placeholder="Search topics, concepts, terms..." onkeydown="if(event.key==='Enter')doSearch()"/>
+      <button onclick="doSearch()">🔍 Search</button>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="stat-topics">24</div><div class="stat-label">Topics</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Levels</div></div>
+    <div class="stat"><div class="stat-num" id="stat-files">12</div><div class="stat-label">Resources</div></div>
+    <div class="stat"><div class="stat-num" id="stat-qa">8</div><div class="stat-label">Q&A Posts</div></div>
+  </div>
+  <div class="section">
+    <div class="section-title">🟢 Basic Topics</div>
+    <div class="cards" id="home-basic-cards"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">🟡 Intermediate Topics</div>
+    <div class="cards" id="home-inter-cards"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">🔴 Advanced Topics</div>
+    <div class="cards" id="home-adv-cards"></div>
+  </div>
+</div>
+
+<!-- TOPICS -->
+<div id="page-topics" class="page">
+  <div class="section">
+    <h2 style="margin-bottom:1rem;">📂 All Topics</h2>
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterTopics('all',this)">All</button>
+      <button class="filter-btn" onclick="filterTopics('basic',this)">🟢 Basic</button>
+      <button class="filter-btn" onclick="filterTopics('intermediate',this)">🟡 Intermediate</button>
+      <button class="filter-btn" onclick="filterTopics('advanced',this)">🔴 Advanced</button>
+    </div>
+    <div class="search-bar" style="max-width:100%;margin-bottom:1.5rem;">
+      <input type="text" id="topic-search" placeholder="Search topics..." oninput="filterTopics('search',null)"/>
+      <button onclick="filterTopics('search',null)">🔍</button>
+    </div>
+    <div class="cards" id="all-topic-cards"></div>
+  </div>
+</div>
+
+<!-- TOPIC DETAIL -->
+<div id="page-detail" class="page">
+  <div class="section">
+    <div class="detail-back" onclick="showPage('topics')">← Back to Topics</div>
+    <div class="detail-header">
+      <div id="detail-icon" style="font-size:2rem;margin-bottom:.5rem;"></div>
+      <h2 id="detail-title"></h2>
+      <div id="detail-tag"></div>
+    </div>
+    <div class="detail-body" id="detail-content"></div>
+    <div class="file-section">
+      <h3>📎 Attached Resources</h3>
+      <div class="file-list" id="detail-files"></div>
+      <label for="file-upload-input">
+        <div class="upload-area" onclick="document.getElementById('file-upload-input').click()">
+          <div class="upload-icon">📤</div>
+          <p><strong>Click to upload</strong> PDF, Excel, Word, PPT, or any file</p>
+          <p style="font-size:.75rem;margin-top:.3rem;">Files will be attached to this topic</p>
+        </div>
+      </label>
+      <input type="file" id="file-upload-input" multiple accept=".pdf,.xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.csv" onchange="handleFileUpload(event)"/>
+    </div>
+  </div>
+</div>
+
+<!-- Q&A -->
+<div id="page-qna" class="page">
+  <div class="section">
+    <h2 style="margin-bottom:1.2rem;">❓ Q&A Community Board</h2>
+    <div class="qa-form">
+      <h3>Post Your Question</h3>
+      <input type="text" id="q-name" placeholder="Your name"/>
+      <input type="text" id="q-title" placeholder="Question title (e.g. What is job analysis?)"/>
+      <select id="q-topic">
+        <option value="">Select related topic</option>
+      </select>
+      <textarea id="q-body" placeholder="Describe your question in detail..."></textarea>
+      <button class="btn-primary" onclick="postQuestion()">📨 Post Question</button>
+    </div>
+    <div id="qa-list"></div>
+  </div>
+</div>
+
+<!-- ADMIN / EDIT -->
+<div id="page-admin" class="page">
+  <div class="section">
+    <h2 style="margin-bottom:1.5rem;">⚙️ Edit & Customize Site</h2>
+
+    <!-- Site Branding -->
+    <div class="admin-section">
+      <h3>🎨 Site Branding</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Site Name</label>
+          <input type="text" id="set-sitename" value="HR Learning Hub"/>
+        </div>
+        <div class="form-group">
+          <label>Tagline</label>
+          <input type="text" id="set-tagline" value="Master Human Resources From Basic to Advanced"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Theme Color</label>
+        <div class="color-picker-group">
+          <div class="color-opt selected" style="background:#1a56db;" onclick="setTheme('#1a56db','#1e429f',this)" title="Blue"></div>
+          <div class="color-opt" style="background:#7c3aed;" onclick="setTheme('#7c3aed','#5b21b6',this)" title="Purple"></div>
+          <div class="color-opt" style="background:#059669;" onclick="setTheme('#059669','#047857',this)" title="Green"></div>
+          <div class="color-opt" style="background:#dc2626;" onclick="setTheme('#dc2626','#b91c1c',this)" title="Red"></div>
+          <div class="color-opt" style="background:#0891b2;" onclick="setTheme('#0891b2','#0e7490',this)" title="Cyan"></div>
+          <div class="color-opt" style="background:#d97706;" onclick="setTheme('#d97706','#b45309',this)" title="Amber"></div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="applyBranding()">Apply Branding</button>
+      <div class="success-msg" id="brand-msg">✅ Branding updated!</div>
+    </div>
+
+    <!-- Add Topic -->
+    <div class="admin-section">
+      <h3>➕ Add New Topic</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Topic Title</label>
+          <input type="text" id="new-topic-title" placeholder="e.g. Employee Engagement"/>
+        </div>
+        <div class="form-group">
+          <label>Icon (emoji)</label>
+          <input type="text" id="new-topic-icon" placeholder="e.g. 💡" style="font-size:1.2rem;"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Level</label>
+          <select id="new-topic-level">
+            <option value="basic">🟢 Basic</option>
+            <option value="intermediate">🟡 Intermediate</option>
+            <option value="advanced">🔴 Advanced</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Short Description</label>
+          <input type="text" id="new-topic-desc" placeholder="Brief one-line description"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Full Content (study notes)</label>
+        <textarea id="new-topic-content" placeholder="Write the full study content for this topic here..."></textarea>
+      </div>
+      <button class="btn-primary" onclick="addTopic()">➕ Add Topic</button>
+      <div class="success-msg" id="topic-msg">✅ Topic added!</div>
+    </div>
+
+    <!-- Feature Toggles -->
+    <div class="admin-section">
+      <h3>🔧 Feature Settings</h3>
+      <div class="toggle-row">
+        <span>Enable Q&A Community Board</span>
+        <label class="toggle"><input type="checkbox" checked onchange="toggleFeature('qna',this)"/><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <span>Allow File Uploads on Topics</span>
+        <label class="toggle"><input type="checkbox" checked onchange="toggleFeature('upload',this)"/><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <span>Show Stats Bar on Home</span>
+        <label class="toggle"><input type="checkbox" checked onchange="toggleFeature('stats',this)"/><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <span>Dark Mode (Preview)</span>
+        <label class="toggle"><input type="checkbox" onchange="toggleDark(this)"/><span class="slider"></span></label>
+      </div>
+    </div>
+
+    <!-- Footer Edit -->
+    <div class="admin-section">
+      <h3>🦶 Footer Text</h3>
+      <div class="form-group">
+        <label>Footer Message</label>
+        <input type="text" id="set-footer" value="Made with ❤️ for HR Students | Free Forever"/>
+      </div>
+      <button class="btn-primary" onclick="applyFooter()">Update Footer</button>
+      <div class="success-msg" id="footer-msg">✅ Footer updated!</div>
+    </div>
+  </div>
+</div>
+
+<footer><p id="footer-text">Made with ❤️ for HR Students | <span>Free Forever</span></p></footer>
+
+<script>
+// ── DATA ──
+let topics = [
+  {id:1,icon:'👥',title:'Introduction to HRM',level:'basic',desc:'What is Human Resource Management and its evolution.',content:`<h3>What is HRM?</h3><p>Human Resource Management (HRM) is the strategic approach to managing people in an organization. It focuses on policies, practices, and systems that influence employee behavior, attitudes, and performance.</p><h3>Key Functions</h3><ul><li>Recruitment & Selection</li><li>Training & Development</li><li>Performance Management</li><li>Compensation & Benefits</li><li>Employee Relations</li></ul><h3>Evolution of HRM</h3><p>HRM evolved from simple personnel administration in the early 20th century to a strategic business partner role today. Modern HR is data-driven and aligned with overall business strategy.</p>`,files:[]},
+  {id:2,icon:'📋',title:'Job Analysis & Design',level:'basic',desc:'Understanding job roles, descriptions, and specifications.',content:`<h3>What is Job Analysis?</h3><p>Job analysis is the process of gathering, examining, and interpreting data about a job's tasks, responsibilities, and requirements.</p><h3>Job Description vs Job Specification</h3><ul><li><strong>Job Description:</strong> What the job involves — duties, responsibilities, working conditions.</li><li><strong>Job Specification:</strong> What the person needs — skills, qualifications, experience.</li></ul><h3>Methods of Job Analysis</h3><ul><li>Observation Method</li><li>Interview Method</li><li>Questionnaire Method</li><li>Critical Incident Technique</li></ul>`,files:[]},
+  {id:3,icon:'🔍',title:'Recruitment & Selection',level:'basic',desc:'Process of attracting, shortlisting, and hiring candidates.',content:`<h3>Recruitment</h3><p>Recruitment is the process of finding and attracting capable applicants for employment. It can be internal (promotions, transfers) or external (job portals, campus hiring).</p><h3>Selection Process</h3><ul><li>Application Screening</li><li>Written Tests</li><li>Group Discussion</li><li>Personal Interview</li><li>Medical Examination</li><li>Final Appointment</li></ul><h3>Modern Recruitment Tools</h3><p>Today, organizations use ATS (Applicant Tracking Systems), LinkedIn, Naukri, and AI-based tools for efficient recruitment.</p>`,files:[]},
+  {id:4,icon:'🎓',title:'Onboarding & Induction',level:'basic',desc:'How new employees are welcomed and settled into an organization.',content:`<h3>What is Onboarding?</h3><p>Onboarding is the process of integrating a new employee into the organization and its culture. A good onboarding program increases retention and productivity.</p><h3>Stages of Onboarding</h3><ul><li>Pre-boarding (before joining)</li><li>Orientation Day</li><li>Role-specific training</li><li>30-60-90 day check-ins</li></ul>`,files:[]},
+  {id:5,icon:'📊',title:'Performance Management',level:'intermediate',desc:'Setting goals, reviewing performance, and giving feedback.',content:`<h3>What is Performance Management?</h3><p>Performance management is a continuous process of identifying, measuring, and developing performance of individuals and teams.</p><h3>Key Components</h3><ul><li>Goal Setting (SMART Goals)</li><li>Continuous Feedback</li><li>Mid-year Reviews</li><li>Annual Appraisals</li><li>Development Plans</li></ul><h3>Appraisal Methods</h3><ul><li>360-Degree Feedback</li><li>Management by Objectives (MBO)</li><li>Behaviorally Anchored Rating Scales (BARS)</li><li>Balanced Scorecard</li></ul>`,files:[]},
+  {id:6,icon:'💰',title:'Compensation & Benefits',level:'intermediate',desc:'Salary structures, pay equity, and employee benefits.',content:`<h3>Compensation</h3><p>Compensation refers to all forms of financial returns and tangible services/benefits employees receive as part of an employment relationship.</p><h3>Components of Compensation</h3><ul><li>Basic Salary</li><li>House Rent Allowance (HRA)</li><li>Dearness Allowance (DA)</li><li>Provident Fund (PF)</li><li>Bonuses & Incentives</li></ul><h3>Benefits</h3><p>Non-monetary benefits include health insurance, leave policies, flexible working, employee assistance programs, and retirement plans.</p>`,files:[]},
+  {id:7,icon:'🏋️',title:'Training & Development',level:'intermediate',desc:'Methods to upskill employees and build organizational capability.',content:`<h3>Training vs Development</h3><p><strong>Training</strong> focuses on current job skills. <strong>Development</strong> prepares employees for future roles.</p><h3>Training Methods</h3><ul><li>On-the-Job Training (OJT)</li><li>Classroom Training</li><li>E-Learning / LMS</li><li>Role Plays & Simulations</li><li>Mentoring & Coaching</li></ul><h3>Training Needs Analysis (TNA)</h3><p>TNA identifies the gap between current skills and required skills to design effective training programs.</p>`,files:[]},
+  {id:8,icon:'⚖️',title:'Labor Laws & Compliance',level:'intermediate',desc:'Key labor laws every HR professional must know.',content:`<h3>Key Indian Labor Laws</h3><ul><li>The Industrial Disputes Act, 1947</li><li>Factories Act, 1948</li><li>Minimum Wages Act, 1948</li><li>Payment of Gratuity Act, 1972</li><li>Employee Provident Fund Act, 1952</li><li>Sexual Harassment of Women at Workplace Act (POSH), 2013</li></ul><h3>Labour Codes (New)</h3><p>India consolidated 29 labor laws into 4 Labour Codes: Code on Wages, Industrial Relations Code, Social Security Code, and Occupational Safety Code.</p>`,files:[]},
+  {id:9,icon:'📈',title:'HR Analytics',level:'advanced',desc:'Using data and metrics to make strategic HR decisions.',content:`<h3>What is HR Analytics?</h3><p>HR Analytics (also called People Analytics) is the use of data, statistics, and technology to make evidence-based HR decisions.</p><h3>Types of HR Analytics</h3><ul><li><strong>Descriptive:</strong> What happened? (turnover rate, absenteeism)</li><li><strong>Predictive:</strong> What will happen? (attrition risk models)</li><li><strong>Prescriptive:</strong> What should we do? (recommendations)</li></ul><h3>Key HR Metrics</h3><ul><li>Time to Hire</li><li>Cost per Hire</li><li>Employee Turnover Rate</li><li>Training ROI</li><li>Employee Net Promoter Score (eNPS)</li></ul>`,files:[]},
+  {id:10,icon:'🧠',title:'Strategic HRM',level:'advanced',desc:'Aligning HR strategy with business goals and objectives.',content:`<h3>Strategic HRM</h3><p>Strategic HRM involves linking human resource management policies and practices to the strategic objectives of the organization.</p><h3>Models of Strategic HRM</h3><ul><li>Harvard Model</li><li>Michigan Model (Matching Model)</li><li>Guest Model</li><li>Warwick Model</li></ul><h3>HR as a Business Partner</h3><p>Dave Ulrich's HR Business Partner model positions HR as a strategic partner, change agent, administrative expert, and employee champion.</p>`,files:[]},
+  {id:11,icon:'🤝',title:'Employee Relations',level:'intermediate',desc:'Managing workplace relationships, grievances, and discipline.',content:`<h3>Employee Relations</h3><p>Employee relations refers to the efforts an organization makes to manage relationships between employers and employees to maintain a productive work environment.</p><h3>Grievance Handling</h3><ul><li>Open Door Policy</li><li>Formal Grievance Procedure</li><li>Mediation & Arbitration</li></ul><h3>Disciplinary Procedures</h3><p>Disciplinary action should follow natural justice principles: inform, investigate, hear, decide, and appeal.</p>`,files:[]},
+  {id:12,icon:'🌍',title:'Organizational Behavior',level:'advanced',desc:'Study of human behavior in organizational settings.',content:`<h3>What is OB?</h3><p>Organizational Behavior (OB) is the study of how individuals, groups, and structures impact behavior within organizations.</p><h3>Key Theories</h3><ul><li>Maslow's Hierarchy of Needs</li><li>Herzberg's Two-Factor Theory</li><li>McGregor's Theory X and Y</li><li>Vroom's Expectancy Theory</li></ul><h3>Organizational Culture</h3><p>Culture refers to shared values, beliefs, and practices. Strong cultures improve employee engagement and performance.</p>`,files:[]},
+];
+
+let questions = [
+  {id:1,name:'Priya S.',title:'What is the difference between HRM and HRD?',topic:'Introduction to HRM',body:'I am confused between HRM and HRD. Can someone explain with examples?',time:'2 days ago',answers:[{text:'HRM (Human Resource Management) is the broader field covering all HR functions. HRD (Human Resource Development) is a subset focused specifically on learning, training, and development of employees.',meta:'Answered by Admin'}]},
+  {id:2,name:'Rohit K.',title:'How is HR Analytics used in real companies?',topic:'HR Analytics',body:'What are some practical examples of HR analytics being used in Indian companies?',time:'1 day ago',answers:[]},
+];
+
+let currentTopicId = null;
+let currentFilter = 'all';
+
+// ── NAVIGATION ──
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('nav-'+page)?.classList.add('active');
+  if(page==='home') renderHome();
+  if(page==='topics') renderTopics();
+  if(page==='qna') renderQA();
+}
+
+// ── RENDER HOME ──
+function renderHome(){
+  ['basic','intermediate','advanced'].forEach(level=>{
+    const key=level==='basic'?'basic':level==='intermediate'?'inter':'adv';
+    const container=document.getElementById('home-'+key+'-cards');
+    const filtered=topics.filter(t=>t.level===level).slice(0,4);
+    container.innerHTML=filtered.map(t=>topicCard(t)).join('');
+  });
+}
+
+function topicCard(t){
+  return `<div class="card" onclick="openTopic(${t.id})">
+    <div class="card-icon">${t.icon}</div>
+    <h3>${t.title}</h3>
+    <p>${t.desc}</p>
+    <span class="tag ${t.level}">${t.level.charAt(0).toUpperCase()+t.level.slice(1)}</span>
+  </div>`;
+}
+
+// ── RENDER TOPICS ──
+function renderTopics(filter){
+  if(filter) currentFilter=filter;
+  const search=document.getElementById('topic-search')?.value.toLowerCase()||'';
+  let list=topics;
+  if(currentFilter!=='all') list=list.filter(t=>t.level===currentFilter);
+  if(search) list=list.filter(t=>t.title.toLowerCase().includes(search)||t.desc.toLowerCase().includes(search));
+  document.getElementById('all-topic-cards').innerHTML=list.length?list.map(t=>topicCard(t)).join(''):'<p style="color:var(--muted)">No topics found.</p>';
+}
+
+function filterTopics(f,btn){
+  if(btn){
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter=f;
+  }
+  renderTopics();
+}
+
+// ── TOPIC DETAIL ──
+function openTopic(id){
+  const t=topics.find(x=>x.id===id);
+  if(!t) return;
+  currentTopicId=id;
+  document.getElementById('detail-icon').textContent=t.icon;
+  document.getElementById('detail-title').textContent=t.title;
+  document.getElementById('detail-tag').innerHTML=`<span class="tag ${t.level}">${t.level.charAt(0).toUpperCase()+t.level.slice(1)}</span>`;
+  document.getElementById('detail-content').innerHTML=t.content;
+  renderFiles(t);
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-detail').classList.add('active');
+}
+
+function renderFiles(t){
+  const icons={'pdf':'📄','xlsx':'📊','xls':'📊','doc':'📝','docx':'📝','ppt':'📑','pptx':'📑','txt':'📃','csv':'📋'};
+  const list=document.getElementById('detail-files');
+  if(!t.files||t.files.length===0){list.innerHTML='<p style="color:var(--muted);font-size:.85rem;">No files attached yet. Upload below.</p>';return;}
+  list.innerHTML=t.files.map((f,i)=>{
+    const ext=f.name.split('.').pop().toLowerCase();
+    const icon=icons[ext]||'📎';
+    return `<div class="file-item">
+      <span class="file-icon">${icon}</span>
+      <div class="file-info"><div class="file-name">${f.name}</div><div class="file-meta">${f.size}</div></div>
+      <button class="file-btn" onclick="downloadFile(${currentTopicId},${i})">⬇ Download</button>
+      <button class="file-btn" style="border-color:#ef4444;color:#ef4444;" onclick="deleteFile(${currentTopicId},${i})">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+function handleFileUpload(e){
+  const t=topics.find(x=>x.id===currentTopicId);
+  if(!t) return;
+  Array.from(e.target.files).forEach(file=>{
+    const size=file.size<1024?file.size+' B':file.size<1048576?(file.size/1024).toFixed(1)+' KB':(file.size/1048576).toFixed(1)+' MB';
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      t.files.push({name:file.name,size,data:ev.target.result,type:file.type});
+      renderFiles(t);
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value='';
+}
+
+function downloadFile(topicId,fileIdx){
+  const t=topics.find(x=>x.id===topicId);
+  if(!t||!t.files[fileIdx]) return;
+  const f=t.files[fileIdx];
+  const a=document.createElement('a');
+  a.href=f.data;a.download=f.name;a.click();
+}
+
+function deleteFile(topicId,fileIdx){
+  const t=topics.find(x=>x.id===topicId);
+  if(!t) return;
+  t.files.splice(fileIdx,1);
+  renderFiles(t);
+}
+
+// ── SEARCH ──
+function doSearch(){
+  const q=document.getElementById('home-search').value.trim();
+  if(!q) return;
+  document.getElementById('topic-search').value=q;
+  showPage('topics');
+  filterTopics('search',null);
+}
+
+// ── Q&A ──
+function renderQA(){
+  const sel=document.getElementById('q-topic');
+  sel.innerHTML='<option value="">Select related topic</option>'+topics.map(t=>`<option>${t.title}</option>`).join('');
+  const list=document.getElementById('qa-list');
+  if(!questions.length){list.innerHTML='<p style="color:var(--muted)">No questions yet. Be the first to ask!</p>';return;}
+  list.innerHTML=questions.map(q=>`
+    <div class="qa-card">
+      <div class="q-title">❓ ${q.title}</div>
+      <div class="q-meta">👤 ${q.name} &nbsp;|&nbsp; 🕒 ${q.time} &nbsp;|&nbsp; <span class="q-tag">${q.topic||'General'}</span></div>
+      <div class="q-body">${q.body}</div>
+      <div class="answers">${q.answers.map(a=>`<div class="answer">${a.text}<div class="answer-meta">— ${a.meta}</div></div>`).join('')}</div>
+      <div style="margin-top:.6rem;">
+        <button class="btn-sm btn-outline" onclick="toggleReply(${q.id})">💬 Reply</button>
+      </div>
+      <div class="reply-form" id="reply-${q.id}">
+        <textarea placeholder="Write your answer..."></textarea>
+        <button class="btn-sm btn-primary" style="margin-top:.4rem;" onclick="postReply(${q.id})">Post Reply</button>
+      </div>
+    </div>`).join('');
+}
+
+function toggleReply(id){
+  const f=document.getElementById('reply-'+id);
+  f.style.display=f.style.display==='block'?'none':'block';
+}
+
+function postReply(id){
+  const f=document.getElementById('reply-'+id);
+  const ta=f.querySelector('textarea');
+  const text=ta.value.trim();
+  if(!text) return;
+  const q=questions.find(x=>x.id===id);
+  q.answers.push({text,meta:'Student'});
+  renderQA();
+}
+
+function postQuestion(){
+  const name=document.getElementById('q-name').value.trim()||'Anonymous';
+  const title=document.getElementById('q-title').value.trim();
+  const topic=document.getElementById('q-topic').value;
+  const body=document.getElementById('q-body').value.trim();
+  if(!title||!body){alert('Please fill in the question title and description.');return;}
+  questions.unshift({id:Date.now(),name,title,topic,body,time:'Just now',answers:[]});
+  document.getElementById('q-name').value='';
+  document.getElementById('q-title').value='';
+  document.getElementById('q-body').value='';
+  document.getElementById('q-topic').value='';
+  renderQA();
+  document.getElementById('stat-qa').textContent=questions.length;
+}
+
+// ── ADMIN ──
+function addTopic(){
+  const title=document.getElementById('new-topic-title').value.trim();
+  const icon=document.getElementById('new-topic-icon').value.trim()||'📌';
+  const level=document.getElementById('new-topic-level').value;
+  const desc=document.getElementById('new-topic-desc').value.trim();
+  const content=document.getElementById('new-topic-content').value.trim();
+  if(!title){alert('Please enter a topic title.');return;}
+  topics.push({id:Date.now(),icon,title,level,desc:desc||'No description.',content:content?`<p>${content}</p>`:'<p>Content coming soon.</p>',files:[]});
+  document.getElementById('new-topic-title').value='';
+  document.getElementById('new-topic-icon').value='';
+  document.getElementById('new-topic-desc').value='';
+  document.getElementById('new-topic-content').value='';
+  document.getElementById('stat-topics').textContent=topics.length;
+  showSuccess('topic-msg');
+}
+
+function applyBranding(){
+  const name=document.getElementById('set-sitename').value;
+  const tag=document.getElementById('set-tagline').value;
+  document.querySelector('.logo').innerHTML=`📚 <span>${name.split(' ')[0]}</span>${name.split(' ').slice(1).join(' ')}`;
+  document.querySelector('.hero h1').innerHTML=tag;
+  showSuccess('brand-msg');
+}
+
+function applyFooter(){
+  const txt=document.getElementById('set-footer').value;
+  document.getElementById('footer-text').textContent=txt;
+  showSuccess('footer-msg');
+}
+
+function setTheme(c1,c2,el){
+  document.documentElement.style.setProperty('--primary',c1);
+  document.documentElement.style.setProperty('--primary-dark',c2);
+  document.querySelectorAll('.color-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function toggleFeature(feature,el){
+  if(feature==='qna') document.getElementById('nav-qna').style.display=el.checked?'':'none';
+  if(feature==='upload') document.querySelector('.upload-area').closest('label').style.display=el.checked?'':'none';
+  if(feature==='stats') document.querySelector('.stats').style.display=el.checked?'':'none';
+}
+
+function toggleDark(el){
+  if(el.checked){
+    document.documentElement.style.setProperty('--bg','#0f172a');
+    document.documentElement.style.setProperty('--card','#1e293b');
+    document.documentElement.style.setProperty('--text','#f1f5f9');
+    document.documentElement.style.setProperty('--border','#334155');
+    document.documentElement.style.setProperty('--muted','#94a3b8');
+  } else {
+    document.documentElement.style.setProperty('--bg','#f0f4ff');
+    document.documentElement.style.setProperty('--card','#fff');
+    document.documentElement.style.setProperty('--text','#1e293b');
+    document.documentElement.style.setProperty('--border','#e2e8f0');
+    document.documentElement.style.setProperty('--muted','#64748b');
+  }
+}
+
+function showSuccess(id){
+  const el=document.getElementById(id);
+  el.style.display='block';
+  setTimeout(()=>el.style.display='none',2500);
+}
+
+// ── INIT ──
+renderHome();
+</script>
+</body>
+</html>
